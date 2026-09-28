@@ -52,15 +52,19 @@
 	              install in the background without a prompt; the in-app UI
 	              still lets them pick prompt-first.
 	-->
+	<!-- kit-mac (ttwwnn/kit-mac): build com o patch "focar-janela"; o instalador do kit a reconhece por esta chave.
+	     As atualizações automáticas ficam desligadas para o Sparkle não trocá-la pela build oficial sem o patch. -->
+	<key>KitMacPatch</key>
+	<string>focar-janela-1</string>
 	<key>SUFeedURL</key>
 	<string>https://www.menubardock.com/appcast.xml</string>
 	<key>SUPublicEDKey</key>
 	<string>k3B1U0o3RBCyNKdtLsniY1f2HajvaVWSr/NLcZ499ZM=</string>
 	<key>SUEnableAutomaticChecks</key>
-	<true/>
+	<false/>
 	<key>SUScheduledCheckInterval</key>
 	<integer>86400</integer>
 	<key>SUAllowsAutomaticUpdates</key>
-	<true/>
+	<false/>
 </dict>
 </plist>

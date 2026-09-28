@@ -136,6 +136,34 @@ class OpenableApp {
 		} else {
 			launchApp()
 		}
+		showWindowIfNoneOnScreen()
+	}
+
+	// kit-mac (28/09/2026): app já aberto que, depois do clique, continua sem janela à vista. Acontece com a janela em
+	// outro Espaço (tela cheia) e o app já na frente, porque ativar o app da frente não troca de Espaço; e com a
+	// janela minimizada. Pede ao QuitOnClose (agente do kit, com Acessibilidade) para trazer a janela mais à frente
+	// do app. Sem o QuitOnClose, nada muda.
+	private func showWindowIfNoneOnScreen() {
+		guard let running = runningApplication, !running.isTerminated else { return }
+		let pid = running.processIdentifier
+		DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) {
+			guard !OpenableApp.hasWindowOnScreen(pid) else { return }
+			DistributedNotificationCenter.default().postNotificationName(
+				Notification.Name("br.ttwwnn.quitonclose.focar"),
+				object: UUID().uuidString,
+				userInfo: ["pid": String(pid)],
+				deliverImmediately: true
+			)
+		}
+	}
+
+	private static func hasWindowOnScreen(_ pid: pid_t) -> Bool {
+		let info = CGWindowListCopyWindowInfo([.optionOnScreenOnly, .excludeDesktopElements], kCGNullWindowID) as? [[String: Any]] ?? []
+		return info.contains { window in
+			(window[kCGWindowOwnerPID as String] as? pid_t) == pid
+				&& (window[kCGWindowLayer as String] as? Int) == 0
+				&& ((window[kCGWindowBounds as String] as? [String: Double])?["Width"] ?? 0) >= 100
+		}
 	}
 
 	private func launchApp() {
